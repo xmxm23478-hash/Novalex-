@@ -1,427 +1,341 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novalex - منصة التواصل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Novalex • المنصة المتكاملة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
-        body{background:#667eea;padding:10px;padding-bottom:80px}
-        
-        .header{
-            background:white;
-            border-radius:50px;
-            padding:15px;
-            margin-bottom:20px;
-            text-align:center;
-            font-size:24px;
-            font-weight:bold;
-            color:#667eea;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        .navbar{
-            position:fixed;
-            bottom:0;
-            left:0;
-            right:0;
-            background:white;
-            display:flex;
-            justify-content:space-around;
-            padding:10px;
-            border-radius:30px 30px 0 0;
-        }
-        
-        .nav-item{
-            padding:5px 15px;
-            cursor:pointer;
-            border-radius:20px;
-        }
-        
-        .nav-item.active{
-            background:#667eea;
-            color:white;
-        }
-        
-        .post-btn{
-            position:fixed;
-            bottom:80px;
-            right:20px;
-            width:50px;
-            height:50px;
-            border-radius:50%;
-            background:gold;
-            border:none;
-            font-size:24px;
-            cursor:pointer;
-        }
-        
-        .modal{
-            position:fixed;
-            top:0;
-            left:0;
-            right:0;
-            bottom:0;
-            background:rgba(0,0,0,0.5);
-            display:none;
-            justify-content:center;
-            align-items:center;
-        }
-        
-        .modal-content{
-            background:white;
-            border-radius:20px;
-            padding:20px;
-            width:90%;
-            max-width:400px;
-        }
-        
-        .post{
-            background:white;
-            border-radius:15px;
-            padding:15px;
-            margin-bottom:15px;
-        }
-        
-        .post-header{
-            display:flex;
-            gap:10px;
-            margin-bottom:10px;
-        }
-        
-        .avatar{
-            width:40px;
-            height:40px;
-            border-radius:50%;
-            background:#667eea;
-        }
-        
-        .actions{
-            display:flex;
-            justify-content:space-around;
-            margin-top:10px;
-            padding-top:10px;
-            border-top:1px solid #eee;
-        }
-        
-        .action-btn{
-            cursor:pointer;
-            padding:5px 15px;
-        }
-        
-        .page{display:none}
-        .page.active{display:block}
-    </style>
-</head>
-<body>
-    <div class="header">NOVALEX</div>
 
-    <!-- الصفحة الرئيسية -->
-    <div id="homePage" class="page active">
-        <div id="posts"></div>
-    </div>
-
-    <!-- الملف الشخصي -->
-    <div id="profilePage" class="page">
-        <div style="background:white;border-radius:15px;padding:20px;text-align:center;">
-            <div style="width:80px;height:80px;border-radius:50%;background:#667eea;margin:0 auto 10px;"></div>
-            <h3>أحمد المصري</h3>
-            <div style="display:flex;justify-content:space-around;margin:15px 0;">
-                <div><strong id="postCount">1</strong><br>منشورات</div>
-                <div><strong id="followCount">128</strong><br>متابعون</div>
-            </div>
-            <button id="followBtn" style="background:#667eea;color:white;border:none;padding:8px 25px;border-radius:20px;" onclick="toggleFollow()">متابعة</button>
-        </div>
-        <div id="myPosts"></div>
-    </div>
-
-    <!-- الدردشة -->
-    <div id="chatPage" class="page">
-        <div style="background:white;border-radius:15px;padding:15px;height:70vh;">
-            <h3 style="margin-bottom:10px;">💬 الدردشة</h3>
-            <div id="chatBox" style="height:50vh;overflow-y:auto;border:1px solid #eee;padding:10px;margin-bottom:10px;"></div>
-            <div style="display:flex;gap:5px;">
-                <input id="chatInput" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:10px;" placeholder="اكتب رسالة...">
-                <button onclick="sendMessage()" style="background:#667eea;color:white;border:none;padding:8px 15px;border-radius:10px;">إرسال</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- زر النشر -->
-    <button class="post-btn" onclick="openModal()">+</button>
-
-    <!-- نافذة النشر -->
-    <div class="modal" id="postModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom:10px;">منشور جديد</h3>
-            <input id="postText" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;" placeholder="اكتب منشورك...">
-            <button onclick="publishPost()" style="width:100%;padding:10px;background:#667eea;color:white;border:none;border-radius:10px;">نشر</button>
-        </div>
-    </div>
-
-    <!-- شريط سفلي -->
-    <div class="navbar">
-        <div class="nav-item active" onclick="changePage('home', this)">🏠 الرئيسية</div>
-        <div class="nav-item" onclick="changePage('profile', this)">👤 حسابي</div>
-        <div class="nav-item" onclick="changePage('chat', this)">💬 دردشة</div>
-    </div>
-
-    <script>
-        // البيانات
-        let posts = [
-            {id:1, user:'أحمد', text:'مرحبا بكم في نوفالكس!', likes:5, comments:[]}
-        ];
-        let myPosts = [
-            {id:1, user:'أحمد', text:'مرحبا بكم في نوفالكس!', likes:5, comments:[]}
-        ];
-        let following = false;
-        let followers = 128;
-        let messages = ['أحمد: مرحباً', 'سارة: كيف الحال؟'];
-
-        // تغيير الصفحة
-        function changePage(page, element) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(page + 'Page').classList.add('active');
+        :root {
+            --primary-50: #eef2ff;
+            --primary-100: #e0e7ff;
+            --primary-200: #c7d2fe;
+            --primary-300: #a5b4fc;
+            --primary-400: #818cf8;
+            --primary-500: #6366f1;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+            --primary-800: #3730a3;
+            --primary-900: #312e81;
             
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            element.classList.add('active');
+            --secondary-50: #f5f3ff;
+            --secondary-100: #ede9fe;
+            --secondary-200: #ddd6fe;
+            --secondary-300: #c4b5fd;
+            --secondary-400: #a78bfa;
+            --secondary-500: #8b5cf6;
+            --secondary-600: #7c3aed;
+            --secondary-700: #6d28d9;
+            --secondary-800: #5b21b6;
+            --secondary-900: #4c1d95;
             
-            if(page === 'home') showPosts();
-            if(page === 'profile') showMyPosts();
-            if(page === 'chat') showChat();
+            --accent-50: #fdf2f8;
+            --accent-100: #fce7f3;
+            --accent-200: #fbcfe8;
+            --accent-300: #f9a8d4;
+            --accent-400: #f472b6;
+            --accent-500: #ec4899;
+            --accent-600: #db2777;
+            --accent-700: #be185d;
+            --accent-800: #9d174d;
+            --accent-900: #831843;
+            
+            --success-50: #ecfdf5;
+            --success-100: #d1fae5;
+            --success-200: #a7f3d0;
+            --success-300: #6ee7b7;
+            --success-400: #34d399;
+            --success-500: #10b981;
+            --success-600: #059669;
+            --success-700: #047857;
+            --success-800: #065f46;
+            --success-900: #064e3b;
+            
+            --danger-50: #fef2f2;
+            --danger-100: #fee2e2;
+            --danger-200: #fecaca;
+            --danger-300: #fca5a5;
+            --danger-400: #f87171;
+            --danger-500: #ef4444;
+            --danger-600: #dc2626;
+            --danger-700: #b91c1c;
+            --danger-800: #991b1b;
+            --danger-900: #7f1d1d;
+            
+            --warning-50: #fffbeb;
+            --warning-100: #fef3c7;
+            --warning-200: #fde68a;
+            --warning-300: #fcd34d;
+            --warning-400: #fbbf24;
+            --warning-500: #f59e0b;
+            --warning-600: #d97706;
+            --warning-700: #b45309;
+            --warning-800: #92400e;
+            --warning-900: #78350f;
+            
+            --info-50: #eff6ff;
+            --info-100: #dbeafe;
+            --info-200: #bfdbfe;
+            --info-300: #93c5fd;
+            --info-400: #60a5fa;
+            --info-500: #3b82f6;
+            --info-600: #2563eb;
+            --info-700: #1d4ed8;
+            --info-800: #1e40af;
+            --info-900: #1e3a8a;
+            
+            --dark-900: #0f172a;
+            --dark-800: #1e293b;
+            --dark-700: #334155;
+            --dark-600: #475569;
+            --dark-500: #64748b;
+            --dark-400: #94a3b8;
+            --dark-300: #cbd5e1;
+            --dark-200: #e2e8f0;
+            --dark-100: #f1f5f9;
+            --dark-50: #f8fafc;
+            
+            --surface-light: #ffffff;
+            --surface-dark: #1e293b;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-2xl: 32px;
+            --radius-3xl: 48px;
+            --radius-full: 9999px;
+            
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
         }
 
-        // عرض المنشورات
-        function showPosts() {
-            let html = '';
-            posts.forEach(p => {
-                html += `
-                <div class="post">
-                    <div class="post-header">
-                        <div class="avatar"></div>
-                        <div><strong>${p.user}</strong></div>
-                    </div>
-                    <p>${p.text}</p>
-                    <div class="actions">
-                        <span class="action-btn" onclick="likePost(${p.id})">❤️ ${p.likes}</span>
-                        <span class="action-btn" onclick="commentPost(${p.id})">💬 ${p.comments.length}</span>
-                    </div>
-                </div>`;
-            });
-            document.getElementById('posts').innerHTML = html;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Cairo', sans-serif;
+            margin: 0;
+            direction: rtl;
+            transition: background var(--transition-normal);
         }
 
-        // عرض منشوراتي
-        function showMyPosts() {
-            let html = '';
-            myPosts.forEach(p => {
-                html += `
-                <div class="post">
-                    <div class="post-header">
-                        <div class="avatar"></div>
-                        <div><strong>${p.user}</strong></div>
-                    </div>
-                    <p>${p.text}</p>
-                </div>`;
-            });
-            document.getElementById('myPosts').innerHTML = html;
-            document.getElementById('postCount').innerHTML = myPosts.length;
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
-        // إعجاب
-        function likePost(id) {
-            let post = posts.find(p => p.id === id);
-            if(post) {
-                post.likes++;
-                showPosts();
+        .phone-frame {
+            width: 100%;
+            max-width: 480px;
+            height: 95vh;
+            max-height: 950px;
+            background: var(--surface-light);
+            border-radius: 48px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 8px #1e1e1e;
+            position: relative;
+            margin: 0 auto;
+            animation: phoneAppear 0.8s ease;
+        }
+
+        @media (max-width: 480px) {
+            .phone-frame {
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+                border: none;
             }
         }
 
-        // تعليق
-        function commentPost(id) {
-            let comment = prompt('اكتب تعليقك:');
-            if(comment) {
-                let post = posts.find(p => p.id === id);
-                if(post) {
-                    post.comments.push(comment);
-                    showPosts();
-                }
-            }
+        @keyframes phoneAppear {
+            0% { transform: scale(0.8) translateY(100px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        // متابعة
-        function toggleFollow() {
-            following = !following;
-            let btn = document.getElementById('followBtn');
-            if(following) {
-                btn.innerHTML = 'متابع ✓';
-                followers++;
-            } else {
-                btn.innerHTML = 'متابعة';
-                followers--;
-            }
-            document.getElementById('followCount').innerHTML = followers;
+        .app {
+            width: 100%;
+            height: 100%;
+            background: var(--dark-100);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: background var(--transition-normal);
         }
 
-        // نافذة النشر
-        function openModal() {
-            document.getElementById('postModal').style.display = 'flex';
+        body.dark-mode .app {
+            background: var(--dark-900);
         }
 
-        // نشر
-        function publishPost() {
-            let text = document.getElementById('postText').value.trim();
-            if(text) {
-                let newPost = {
-                    id: Date.now(),
-                    user: 'أحمد',
-                    text: text,
-                    likes: 0,
-                    comments: []
-                };
-                posts.unshift(newPost);
-                myPosts.unshift({...newPost});
-                
-                document.getElementById('postModal').style.display = 'none';
-                document.getElementById('postText').value = '';
-                
-                showPosts();
-                showMyPosts();
-                alert('✅ تم النشر');
-            }
+        /* =============== شاشة تسجيل الدخول =============== */
+        .auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600), var(--accent-600));
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: transform var(--transition-slow);
+            animation: fadeIn 0.8s ease;
         }
 
-        // الدردشة
-        function showChat() {
-            let html = '';
-            messages.forEach(m => html += `<p>${m}</p>`);
-            document.getElementById('chatBox').innerHTML = html;
+        .auth-screen.hidden {
+            transform: translateY(100%);
+            display: flex !important;
         }
 
-        function sendMessage() {
-            let input = document.getElementById('chatInput');
-            if(input.value.trim()) {
-                messages.push('أنت: ' + input.value);
-                showChat();
-                input.value = '';
-            }
+        #mainHeader.hidden, #mainContent.hidden {
+            display: none !important;
         }
 
-        // إغلاق النافذة عند الضغط خارجها
-        window.onclick = function(e) {
-            if(e.target.classList.contains('modal')) {
-                document.getElementById('postModal').style.display = 'none';
-            }
-        };
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-        // بدء
-        window.onload = function() {
-            showPosts();
-            showMyPosts();
-            showChat();
-        };
-    </script>
-</body>
-</html>/* =============== الهيدر (معدل) =============== */
-.header {
-    background: var(--surface-light);
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--dark-200);
-    z-index: 100;
-    flex-shrink: 0;
-    height: 70px;
-    width: 100%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    transition: all var(--transition-normal);
-}
+        .auth-card {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-2xl);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: var(--shadow-2xl);
+            animation: slideUp 0.6s ease;
+        }
 
-body.dark-mode .header {
-    background: var(--dark-800);
-    border-color: var(--dark-700);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
 
-.logo {
-    font-size: 26px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--primary-600), var(--secondary-600), var(--accent-600));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    letter-spacing: -0.5px;
-}
+        .auth-logo {
+            font-size: 42px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600), var(--accent-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
 
-.logo:hover {
-    transform: scale(1.05) rotate(-1deg);
-}
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-.header-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
+        .auth-input {
+            width: 100%;
+            padding: 18px 20px;
+            margin-bottom: 15px;
+            border: 2px solid var(--dark-200);
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            outline: none;
+            background: white;
+            transition: all var(--transition-normal);
+        }
 
-.header-btn {
-    background: var(--dark-50);
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--dark-500);
-    transition: all var(--transition-fast);
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
+        .auth-input:focus {
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 4px var(--primary-100);
+            transform: translateY(-2px);
+        }
 
-body.dark-mode .header-btn {
-    background: var(--dark-700);
-    color: var(--dark-300);
-}
+        .auth-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
 
-.header-btn:hover {
-    background: var(--primary-100);
-    color: var(--primary-600);
-    transform: rotate(5deg) scale(1.1);
-}
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
 
-body.dark-mode .header-btn:hover {
-    background: var(--primary-900);
-    color: var(--primary-400);
-}
+        .auth-btn:hover::before {
+            left: 100%;
+        }
 
-.badge {
-    position: relative;
-}
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px var(--primary-400);
+        }
 
-.badge::after {
-    content: attr(data-count);
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background: var(--danger-500);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: pulse 2s infinite;
-    border: 2px solid var(--surface-light);
-}
+        .auth-switch {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--primary-600);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all var(--transition-fast);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
 
-body.dark-mode .badge::after {
-    border-color: var(--dark-800);
-}
+        .auth-switch::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-600);
+            transition: all var(--transition-normal);
+            transform: translateX(-50%);
+        }
+
+        .auth-switch:hover::after {
+            width: 30%;
+        }
+
+        .auth-switch:hover {
+            color: var(--primary-700);
+        }
 
 /* =============== المحتوى الرئيسي (معدل) =============== */
 .main-content {
